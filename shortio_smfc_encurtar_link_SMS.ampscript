@@ -1,0 +1,51 @@
+
+%%[
+/*
+  @description = "AMPScript que encurta links através da API do Shot.oi a ser utilizado no Salesforce Marketing Cloud"
+  @author = "Everton Moraes"
+  @version = "1.0"
+  @since =  "08/10/2024"
+*/
+
+
+var @headerKey, @headerVal, @payload, @response, @userid, @campanha, @destinocompleto, @titulo, @shortURL
+
+
+/* ATUALIZAR OS PARAMETROS */
+set @userid = [celular];
+set @campanha = "TESTE_SHORTIO_CAMPANHA"; 
+
+
+/* URL destino*/
+set @destinocompleto =  <URL completo do link/destino a ser encurtado>
+
+/* Titulo do Link Encurtado */
+set @titulo = Concat(FormatDate(Now(), "yyyy-MM-dd")," | ",@campanha," - ",@userid);
+
+/* Autenticação no Short.io */
+set @headerKey = "authorization";
+set @headerVal = <chave da API do short.io >;
+  
+/* Geração dos dados a enviar para a API */
+set @payload = Concat('{
+        "allowDuplicates": true,
+        "domain": <dominion a utilizar, configurado na conta do shortio>,
+        "originalURL": "', @destinocompleto, '",
+        "title": "',@titulo, '",
+        "tags": ["API",
+                "SFMC",
+                "', @campanha, '",
+                "', @userid, '"
+                ]
+                
+    }');
+
+/* Gerando o link encurtado via API*/
+HTTPPost("https://api.short.io/links", "application/json", @payload, @response, @headerKey, @headerVal)
+
+/* Obtendo o Link Encurtado */
+set @shortURL = RegExMatch(@response, '"shortURL":"(.*?)"', 1);
+]%%
+
+/* Trecho a utilizar na mensagem de SMS */
+EMPRESA: Teste de link encurtado: %%=v(@shortURL)=%%
