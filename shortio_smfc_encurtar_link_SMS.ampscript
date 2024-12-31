@@ -29,7 +29,7 @@ set @headerVal = <chave da API do short.io >;
 /* Geração dos dados a enviar para a API */
 set @payload = Concat('{
         "allowDuplicates": true,
-        "domain": <dominion a utilizar, configurado na conta do shortio>,
+        "domain": <dominio a utilizar, configurado na conta do shortio>,
         "originalURL": "', @destinocompleto, '",
         "title": "',@titulo, '",
         "tags": ["API",
